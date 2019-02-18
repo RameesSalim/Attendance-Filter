@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import csv
 import numpy as np
 import json
+
 #Base URL 
 url = "https://sset.ecoleaide.com"
 new_url = requests.get(url)
@@ -40,19 +41,31 @@ br["username"] =username
 br["password"] =password  
 logged_in = br.submit()  
 logincheck = logged_in.read()  
-
+# print(logincheck)
 #Scrapping Needed Data
 new_url = br.geturl()
-print(new_url)
+# print(new_url)
 
 def SimpleEncode(ndarray):
-    return json.dumps(ndarray.tolist())
+    return json.dumps(ndarray)
 def SimpleDecode(jsonDump):
     return np.array(json.loads(jsonDump))
 
-def Attendance(session):
+def selectDate(date):
 	new_url = br.open("https://sset.ecoleaide.com/search/subjAttendReport.htm" + session)
-	details = new_url.read()
+	br.select_form(nr = 0) 
+	br.set_all_readonly(False)
+	br["fromDate"] =date
+	read = br.submit()  
+	details = read.read()
+	return details
+
+def Attendance(session,date=None):
+	new_url = br.open("https://sset.ecoleaide.com/search/subjAttendReport.htm" + session)
+	if(date):
+		details = selectDate(date)
+	else:
+		details = new_url.read()
 	# print(details)
 	soup = BeautifulSoup(details, 'html5lib') 
 	# print(soup.prettify()) 
@@ -67,12 +80,18 @@ def Attendance(session):
 	for row in rows:
 	    cols = row.find_all('td')
 	    cols = [ele.text.strip() for ele in cols]
-	    # print(cols)
 	    data.append([ele for ele in cols if ele])
 	    data[i] = cols
 	    i= i+1
-
 	return data
 
-attendance = Attendance(session)
-print(SimpleEncode(attendance))
+attendance = Attendance(session,'28/01/2019')
+# print(attendance)
+# a = SimpleEncode(attendance)
+print(attendance)
+print("")
+attendance = Attendance(session,'13/02/2019')
+print(attendance)
+print("")
+attendance = Attendance(session,'10/02/2019')
+print(attendance)
