@@ -20,11 +20,10 @@ print(session)
 
 
 #Inputs to submit form
-username = "SEE/6993/16"
-password = "69936993"
 
-# username = input("Enter username :")
-# password = input("Enter Password :")
+
+username = input("Enter username :")
+password = input("Enter Password :")
 
 
 username = "SSET_" + username 
